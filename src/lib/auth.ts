@@ -23,6 +23,31 @@ export function checkPassword(password: string, passwordHash: string) {
 
 export async function checkAuth(request: Request) {
   const token = request.headers.get('authorization')?.split(' ')?.[1];
+
+  // Check if token matches SECRET_VALUE environment variable
+  if (token && process.env.SECRET_VALUE && token === process.env.SECRET_VALUE) {
+    // Create a special admin user for SECRET_VALUE token
+    const adminUser = {
+      id: 'secret-value-auth',
+      username: 'secret-value-auth',
+      role: ROLES.admin,
+      isAdmin: true,
+      createdAt: new Date(),
+    };
+
+    if (process.env.NODE_ENV === 'development') {
+      log('checkAuth: Authenticated via SECRET_VALUE');
+    }
+
+    return {
+      user: adminUser,
+      grant: null,
+      token,
+      shareToken: null,
+      authKey: null,
+    };
+  }
+
   const payload = parseSecureToken(token, secret());
   const shareToken = await parseShareToken(request.headers);
 
