@@ -138,8 +138,20 @@ export async function getTeamWebsites(
 export async function createWebsite(
   data: Prisma.WebsiteCreateInput | Prisma.WebsiteUncheckedCreateInput,
 ): Promise<Website> {
-  return prisma.client.website.create({
-    data,
+  // Ensure website_id is available in data
+  if (!data.website_id) {
+    throw new Error("website_id is required for upsert()");
+  }
+
+  return prisma.client.website.upsert({
+    where: { website_id: data.website_id },
+    update: {
+      // You can choose what to update on duplicate
+      name: data.name,
+      url: data.url,
+      updatedAt: new Date(),
+    },
+    create: data,
   });
 }
 
