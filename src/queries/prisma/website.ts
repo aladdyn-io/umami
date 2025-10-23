@@ -144,7 +144,7 @@ export async function createWebsite(
   }
 
   return prisma.client.website.upsert({
-    where: { website_id: data.id },
+    where: { id: data.id },
     update: {
       // You can choose what to update on duplicate
       name: data.name,
