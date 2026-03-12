@@ -7,7 +7,9 @@ import { getWebsiteSegment, getWebsiteDateRange } from '@/queries';
 
 export async function getJsonBody(request: Request) {
   try {
-    return await request.clone().json();
+    const text = await request.text();
+    if (!text || !text.trim()) return undefined;
+    return JSON.parse(text);
   } catch {
     return undefined;
   }
@@ -25,12 +27,20 @@ export async function parseRequest(
   let auth = null;
 
   const getErrorMessages = (error: z.ZodError) => {
-    return Object.entries(error.format())
-      .map(([key, value]) => {
-        const messages = (value as any)._errors;
-        return messages ? `${key}: ${messages.join(', ')}` : null;
-      })
-      .filter(Boolean);
+    const flattenErrors = (obj: Record<string, any>, prefix = ''): string[] => {
+      const result: string[] = [];
+      for (const [key, value] of Object.entries(obj)) {
+        if (key === '_errors') {
+          if (Array.isArray(value) && value.length > 0) {
+            result.push(prefix ? `${prefix}: ${value.join(', ')}` : value.join(', '));
+          }
+        } else if (value && typeof value === 'object') {
+          result.push(...flattenErrors(value, prefix ? `${prefix}.${key}` : key));
+        }
+      }
+      return result;
+    };
+    return flattenErrors(error.format() as Record<string, any>);
   };
 
   if (schema) {

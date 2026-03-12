@@ -13,6 +13,20 @@ import { anyObjectParam, urlOrPathParam } from '@/lib/schema';
 import { safeDecodeURI, safeDecodeURIComponent } from '@/lib/url';
 import { createSession, saveEvent, saveSessionData } from '@/queries';
 
+// Explicit CORS preflight handler — Next.js 15 returns 405 for OPTIONS by default,
+// which causes browsers to block the cross-origin POST from embedded chatbot widgets.
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, x-umami-cache',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+}
+
 const schema = z.object({
   type: z.enum(['event', 'identify']),
   payload: z.object({
