@@ -10,10 +10,10 @@
     "url": "https://github.com/umami-software/umami.git"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "dev-turbo": "next dev -p 3000 --turbopack",
     "build": "npm-run-all check-env build-db check-db build-tracker build-geo build-app",
-    "start": "next start",
+    "start": "next start -p 3000",
     "build-docker": "npm-run-all build-db build-tracker build-geo build-app",
     "start-docker": "npm-run-all check-db update-tracker set-routes-manifest start-server",
     "start-env": "node scripts/start-env.js",
