@@ -4,7 +4,7 @@ FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10
 RUN pnpm install --frozen-lockfile
 
 # Rebuild the source code only when needed
@@ -35,12 +35,12 @@ ENV NODE_OPTIONS=$NODE_OPTIONS
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10
 
 RUN set -x \
     && apk add --no-cache curl
 
-# Script dependencies
+# Script dependencies (pnpm@10 — avoids pnpm@11 allowBuilds requirement in empty dir)
 RUN pnpm add npm-run-all dotenv prisma@6.7.0
 
 # Permissions for prisma
