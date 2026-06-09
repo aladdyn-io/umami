@@ -158,7 +158,6 @@
 
     try {
       const res = await fetch(endpoint, {
-        keepalive: true,
         method: 'POST',
         body: JSON.stringify({ type, payload }),
         headers: {

@@ -140,7 +140,7 @@ export async function createWebsite(
 ): Promise<Website> {
   // Ensure website_id is available in data
   if (!data.id) {
-    throw new Error("id is required for upsert()");
+    throw new Error('id is required for upsert()');
   }
 
   return prisma.client.website.upsert({
@@ -148,7 +148,7 @@ export async function createWebsite(
     update: {
       // You can choose what to update on duplicate
       name: data.name,
-      url: data.url,
+      domain: (data as { domain?: string | null }).domain ?? null,
       updatedAt: new Date(),
     },
     create: data,

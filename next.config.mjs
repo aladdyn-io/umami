@@ -230,3 +230,6 @@ export default {
     return [...redirects];
   },
 };
+
+// Forced reload
+
